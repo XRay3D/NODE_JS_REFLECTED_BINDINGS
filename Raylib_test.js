@@ -1,721 +1,106 @@
-const raylib = require('./bin/node_reflection.node')
-// import delay from 'delay';
+const rl = require('./bin/node_reflection.node')
 
-raylib.method()
-
-raylib.initWindow(800, 600, 'JS')
-raylib.setTargetFPS(120)
-
-let x = 0, y = 0
-let x_ = 2, y_ = 2
-const w = 100, h = 100
-
-class Vec {
+class Vector2 {
+    // constructor() {
+    //     this.x;
+    //     this.y;
+    // }
     constructor(x, y) {
         this.x = x;
-        this.y = y
-        // Object.freeze(this);
+        this.y = y;
     }
-    add(other) {
-        this.x += other.x;
-        this.y += other.y
+};
+
+// Some Basic Colors
+// NOTE: Custom raylib color palette for amazing visuals on WHITE background
+const LIGHTGRAY = /*CLITERAL(Color)*/ {r : 200, g : 200, b : 200, a : 255}; // Light Gray
+const GRAY = /*CLITERAL(Color)*/ {r : 130, g : 130, b : 130, a : 255};      // Gray
+const DARKGRAY = /*CLITERAL(Color)*/ {r : 80, g : 80, b : 80, a : 255};     // Dark Gray
+const YELLOW = /*CLITERAL(Color)*/ {r : 253, g : 249, b : 0, a : 255};      // Yellow
+const GOLD = /*CLITERAL(Color)*/ {r : 255, g : 203, b : 0, a : 255};        // Gold
+const ORANGE = /*CLITERAL(Color)*/ {r : 255, g : 161, b : 0, a : 255};      // Orange
+const PINK = /*CLITERAL(Color)*/ {r : 255, g : 109, b : 194, a : 255};      // Pink
+const RED = /*CLITERAL(Color)*/ {r : 230, g : 41, b : 55, a : 255};         // Red
+const MAROON = /*CLITERAL(Color)*/ {r : 190, g : 33, b : 55, a : 255};      // Maroon
+const GREEN = /*CLITERAL(Color)*/ {r : 0, g : 228, b : 48, a : 255};        // Green
+const LIME = /*CLITERAL(Color)*/ {r : 0, g : 158, b : 47, a : 255};         // Lime
+const DARKGREEN = /*CLITERAL(Color)*/ {r : 0, g : 117, b : 44, a : 255};    // Dark Green
+const SKYBLUE = /*CLITERAL(Color)*/ {r : 102, g : 191, b : 255, a : 255};   // Sky Blue
+const BLUE = /*CLITERAL(Color)*/ {r : 0, g : 121, b : 241, a : 255};        // Blue
+const DARKBLUE = /*CLITERAL(Color)*/ {r : 0, g : 82, b : 172, a : 255};     // Dark Blue
+const PURPLE = /*CLITERAL(Color)*/ {r : 200, g : 122, b : 255, a : 255};    // Purple
+const VIOLET = /*CLITERAL(Color)*/ {r : 135, g : 60, b : 190, a : 255};     // Violet
+const DARKPURPLE = /*CLITERAL(Color)*/ {r : 112, g : 31, b : 126, a : 255}; // Dark Purple
+const BEIGE = /*CLITERAL(Color)*/ {r : 211, g : 176, b : 131, a : 255};     // Beige
+const BROWN = /*CLITERAL(Color)*/ {r : 127, g : 106, b : 79, a : 255};      // Brown
+const DARKBROWN = /*CLITERAL(Color)*/ {r : 76, g : 63, b : 47, a : 255};    // Dark Brown
+
+const WHITE = /*CLITERAL(Color)*/ {r : 255, g : 255, b : 255, a : 255};    // White
+const BLACK = /*CLITERAL(Color)*/ {r : 0, g : 0, b : 0, a : 255};          // Black
+const BLANK = /*CLITERAL(Color)*/ {r : 0, g : 0, b : 0, a : 0};            // Blank (Transparent)
+const MAGENTA = /*CLITERAL(Color)*/ {r : 255, g : 0, b : 255, a : 255};    // Magenta
+const RAYWHITE = /*CLITERAL(Color)*/ {r : 245, g : 245, b : 245, a : 255}; // My own White (raylib logo)
+
+function main() {
+    // Initialization
+    //---------------------------------------------------------
+    const screenWidth = 800;
+    const screenHeight = 450;
+
+    rl.setConfigFlags(rl.FLAG_MSAA_4X_HINT);
+    rl.initWindow(screenWidth, screenHeight, "rl [shapes] example - bouncing ball");
+
+    var ballPosition = new Vector2(rl.getScreenWidth() / 2.0, rl.getScreenHeight() / 2.0);
+    var ballSpeed = new Vector2(5.0, 4.0);
+    var ballRadius = 20;
+
+    var pause = false;
+    var framesCounter = 0;
+
+    rl.setTargetFPS(60); // Set our game to run at 60 frames-per-second
+    //----------------------------------------------------------
+
+    // Main game loop
+    while(!rl.windowShouldClose()) // Detect window close button or ESC key
+    {
+        // Update
+        //-----------------------------------------------------
+        if(rl.isKeyPressed(rl.KEY_SPACE)) pause = !pause;
+
+        if(!pause) {
+            ballPosition.x += ballSpeed.x;
+            ballPosition.y += ballSpeed.y;
+
+            // Check walls collision for bouncing
+            if((ballPosition.x >= (rl.getScreenWidth() - ballRadius)) || (ballPosition.x <= ballRadius)) ballSpeed.x *= -1.0;
+            if((ballPosition.y >= (rl.getScreenHeight() - ballRadius)) || (ballPosition.y <= ballRadius)) ballSpeed.y *= -1.0;
+        } else framesCounter++;
+        //-----------------------------------------------------
+
+        // Draw
+        //-----------------------------------------------------
+        rl.beginDrawing();
+
+        rl.clearBackground(RAYWHITE);
+
+        rl.drawCircleV(ballPosition, ballRadius, MAROON);
+        rl.drawText("PRESS SPACE to PAUSE BALL MOVEMENT", 10, rl.getScreenHeight() - 25, 20, LIGHTGRAY);
+
+        // On pause, we draw a blinking message
+        if(pause && ((framesCounter / 30) % 2)) rl.drawText("PAUSED", 350, 200, 30, GRAY);
+
+        rl.drawFPS(10, 10);
+
+        rl.endDrawing();
+        //-----------------------------------------------------
     }
-    mul(arg) {
-        this.x *= arg;
-        this.y *= arg
-    }
-    // add(val) {
-    //     this.x = val;
-    //     this.y = val
-    // }
+
+    // De-Initialization
+    //---------------------------------------------------------
+    rl.closeWindow(); // Close window and OpenGL context
+    //----------------------------------------------------------
+
+    return 0;
 }
 
-class Color {
-    constructor(r, g, b, a = 0xFF) {
-        this.r = r; // Color red value
-        this.g = g; // Color green value
-        this.b = b; // Color blue value
-        this.a = a; // Color alpha value
-        // Object.freeze(this);
-    }
-}
-
-const LIGHTGRAY = new Color(200, 200, 200, 255) // Light Gray
-const GRAY = new Color(130, 130, 130, 255)      // Gray
-const DARKGRAY = new Color(80, 80, 80, 255)     // Dark Gray
-const YELLOW = new Color(253, 249, 0, 255)      // Yellow
-const GOLD = new Color(255, 203, 0, 255)        // Gold
-const ORANGE = new Color(255, 161, 0, 255)      // Orange
-const PINK = new Color(255, 109, 194, 255)      // Pink
-const RED = new Color(230, 41, 55, 255)         // Red
-const MAROON = new Color(190, 33, 55, 255)      // Maroon
-const GREEN = new Color(0, 228, 48, 255)        // Green
-const LIME = new Color(0, 158, 47, 255)         // Lime
-const DARKGREEN = new Color(0, 117, 44, 255)    // Dark Green
-const SKYBLUE = new Color(102, 191, 255, 255)   // Sky Blue
-const BLUE = new Color(0, 121, 241, 255)        // Blue
-const DARKBLUE = new Color(0, 82, 172, 255)     // Dark Blue
-const PURPLE = new Color(200, 122, 255, 255)    // Purple
-const VIOLET = new Color(135, 60, 190, 255)     // Violet
-const DARKPURPLE = new Color(112, 31, 126, 255) // Dark Purple
-const BEIGE = new Color(211, 176, 131, 255)     // Beige
-const BROWN = new Color(127, 106, 79, 255)      // Brown
-const DARKBROWN = new Color(76, 63, 47, 255)    // Dark Brown
-
-const WHITE = new Color(255, 255, 255, 255)    // White
-const BLACK = new Color(0, 0, 0, 255)          // Black
-const BLANK = new Color(0, 0, 0, 0)            // Blank (Transparent)
-const MAGENTA = new Color(255, 0, 255, 255)    // Magenta
-const RAYWHITE = new Color(245, 245, 245, 255) // My own White (raylib logo)
-
-const Background = new Color(0x10, 0x10, 0x10);
-const Size = new Vec(29, 29);
-
-let Pos = new Vec(300, 300)
-
-class Rect {
-    constructor() {
-        this.pos = new Vec(raylib.getRandomValue(0, 800 - Size.x), raylib.getRandomValue(0, 600 - Size.y));
-        this.spd = new Vec(raylib.getRandomValue(2, 10), raylib.getRandomValue(2, 10));
-        this.clr = new Color(raylib.getRandomValue(128, 255), raylib.getRandomValue(128, 255), raylib.getRandomValue(128, 255), 255);
-        // Object.freeze(this);
-    }
-    draw() {
-        raylib.drawRectangleV(this.pos, Size, this.clr)
-    }
-    translate() {
-        this.pos.add(this.spd)
-    }
-    translate2(pos) {
-        this.pos.add(this.spd = pos)
-    }
-    contains(pos) {
-        return this.pos.x <= pos.x && this.pos.y <= pos.y
-            && (this.pos.x + Size.x) >= pos.x && (this.pos.y + Size.y) >= pos.y
-    }
-}
-
-let Positions = [];
-
-for(let i = 0; i < 100; ++i) {
-    Positions.push(new Rect())
-}
-
-var rect = new Rect();
-rect.clr = RED;
-
-while(!raylib.windowShouldClose()) {
-    raylib.beginDrawing()
-
-    raylib.clearBackground(Background)
-    // raylib.drawRectangle(100, 100, w, h, MAROON)
-
-    rect.draw()
-
-    raylib.endDrawing()
-
-    for(var obj of Positions) {
-        obj.translate()
-        if(obj.pos.x >= 800 - Size.x && obj.spd.x > 0 || obj.pos.x <= 0 && obj.spd.x < 0) obj.spd.x = -obj.spd.x
-        if(obj.pos.y >= 600 - Size.y && obj.spd.y > 0 || obj.pos.y <= 0 && obj.spd.y < 0) obj.spd.y = -obj.spd.y
-        obj.draw()
-    }
-
-    if(rect.contains(raylib.getMousePosition()) && raylib.isMouseButtonDown(0)) {
-        rect.translate2(raylib.getMouseDelta())
-    }
-
-    console.warn(raylib.getRandomValue(0, 100))
-    console.warn(raylib.getFrameTime())
-    console.warn(raylib.getTime())
-    console.warn(raylib.getMousePosition())
-    console.warn(raylib.isMouseButtonPressed(0))
-
-    // raylib.waitTime(1. / 120)
-}
-
-throw ""
-
-raylib.closeWindow()
-raylib.windowShouldClose()
-raylib.isWindowReady()
-raylib.isWindowFullscreen()
-raylib.isWindowHidden()
-raylib.isWindowMinimized()
-raylib.isWindowMaximized()
-raylib.isWindowFocused()
-raylib.isWindowResized()
-raylib.isWindowState()
-raylib.setWindowState()
-raylib.clearWindowState()
-raylib.toggleFullscreen()
-raylib.toggleBorderlessWindowed()
-raylib.maximizeWindow()
-raylib.minimizeWindow()
-raylib.restoreWindow()
-raylib.setWindowIcon()
-raylib.setWindowIcons()
-raylib.setWindowTitle()
-raylib.setWindowPosition()
-raylib.setWindowMonitor()
-raylib.setWindowMinSize()
-raylib.setWindowMaxSize()
-raylib.setWindowSize()
-raylib.setWindowOpacity()
-raylib.setWindowFocused()
-raylib.getWindowHandle()
-raylib.getScreenWidth()
-raylib.getScreenHeight()
-raylib.getRenderWidth()
-raylib.getRenderHeight()
-raylib.getMonitorCount()
-raylib.getCurrentMonitor()
-raylib.getMonitorPosition()
-raylib.getMonitorWidth()
-raylib.getMonitorHeight()
-raylib.getMonitorPhysicalWidth()
-raylib.getMonitorPhysicalHeight()
-raylib.getMonitorRefreshRate()
-raylib.getWindowPosition()
-raylib.getWindowScaleDPI()
-raylib.getMonitorName()
-raylib.setClipboardText()
-raylib.getClipboardText()
-raylib.getClipboardImage()
-raylib.enableEventWaiting()
-raylib.disableEventWaiting()
-raylib.showCursor()
-raylib.hideCursor()
-raylib.isCursorHidden()
-raylib.enableCursor()
-raylib.disableCursor()
-raylib.isCursorOnScreen()
-raylib.clearBackground()
-raylib.beginDrawing()
-raylib.endDrawing()
-raylib.beginMode2D()
-raylib.endMode2D()
-raylib.beginMode3D()
-raylib.endMode3D()
-raylib.beginTextureMode()
-raylib.endTextureMode()
-raylib.beginShaderMode()
-raylib.endShaderMode()
-raylib.beginBlendMode()
-raylib.endBlendMode()
-raylib.beginScissorMode()
-raylib.endScissorMode()
-raylib.beginVrStereoMode()
-raylib.endVrStereoMode()
-raylib.loadVrStereoConfig()
-raylib.unloadVrStereoConfig()
-raylib.loadShader()
-raylib.loadShaderFromMemory()
-raylib.isShaderValid()
-raylib.getShaderLocation()
-raylib.getShaderLocationAttrib()
-raylib.setShaderValue()
-raylib.setShaderValueV()
-raylib.setShaderValueMatrix()
-raylib.setShaderValueTexture()
-raylib.unloadShader()
-raylib.getScreenToWorldRay()
-raylib.getScreenToWorldRayEx()
-raylib.getWorldToScreen()
-raylib.getWorldToScreenEx()
-raylib.getWorldToScreen2D()
-raylib.getScreenToWorld2D()
-raylib.getCameraMatrix()
-raylib.getCameraMatrix2D()
-raylib.setTargetFPS()
-raylib.getFrameTime()
-raylib.getTime()
-raylib.getFPS()
-raylib.swapScreenBuffer()
-raylib.pollInputEvents()
-raylib.waitTime()
-raylib.setRandomSeed()
-raylib.getRandomValue()
-raylib.loadRandomSequence()
-raylib.unloadRandomSequence()
-raylib.takeScreenshot()
-raylib.setConfigFlags()
-raylib.openURL()
-raylib.traceLog()
-raylib.setTraceLogLevel()
-raylib.memAlloc()
-raylib.memRealloc()
-raylib.memFree()
-raylib.setTraceLogCallback()
-raylib.setLoadFileDataCallback()
-raylib.setSaveFileDataCallback()
-raylib.setLoadFileTextCallback()
-raylib.setSaveFileTextCallback()
-raylib.loadFileData()
-raylib.unloadFileData()
-raylib.saveFileData()
-raylib.exportDataAsCode()
-raylib.loadFileText()
-raylib.unloadFileText()
-raylib.saveFileText()
-raylib.fileExists()
-raylib.directoryExists()
-raylib.isFileExtension()
-raylib.getFileLength()
-raylib.getFileExtension()
-raylib.getFileName()
-raylib.getFileNameWithoutExt()
-raylib.getDirectoryPath()
-raylib.getPrevDirectoryPath()
-raylib.getWorkingDirectory()
-raylib.getApplicationDirectory()
-raylib.makeDirectory()
-raylib.changeDirectory()
-raylib.isPathFile()
-raylib.isFileNameValid()
-raylib.loadDirectoryFiles()
-raylib.loadDirectoryFilesEx()
-raylib.unloadDirectoryFiles()
-raylib.isFileDropped()
-raylib.loadDroppedFiles()
-raylib.unloadDroppedFiles()
-raylib.getFileModTime()
-raylib.compressData()
-raylib.decompressData()
-raylib.encodeDataBase64()
-raylib.decodeDataBase64()
-raylib.computeCRC32()
-raylib.computeMD5()
-raylib.computeSHA1()
-raylib.loadAutomationEventList()
-raylib.unloadAutomationEventList()
-raylib.exportAutomationEventList()
-raylib.setAutomationEventList()
-raylib.setAutomationEventBaseFrame()
-raylib.startAutomationEventRecording()
-raylib.stopAutomationEventRecording()
-raylib.playAutomationEvent()
-raylib.isKeyPressed()
-raylib.isKeyPressedRepeat()
-raylib.isKeyDown()
-raylib.isKeyReleased()
-raylib.isKeyUp()
-raylib.getKeyPressed()
-raylib.getCharPressed()
-raylib.getKeyName()
-raylib.setExitKey()
-raylib.isGamepadAvailable()
-raylib.getGamepadName()
-raylib.isGamepadButtonPressed()
-raylib.isGamepadButtonDown()
-raylib.isGamepadButtonReleased()
-raylib.isGamepadButtonUp()
-raylib.getGamepadButtonPressed()
-raylib.getGamepadAxisCount()
-raylib.getGamepadAxisMovement()
-raylib.setGamepadMappings()
-raylib.setGamepadVibration()
-raylib.isMouseButtonPressed()
-raylib.isMouseButtonDown()
-raylib.isMouseButtonReleased()
-raylib.isMouseButtonUp()
-raylib.getMouseX()
-raylib.getMouseY()
-raylib.getMousePosition()
-raylib.getMouseDelta()
-raylib.setMousePosition()
-raylib.setMouseOffset()
-raylib.setMouseScale()
-raylib.getMouseWheelMove()
-raylib.getMouseWheelMoveV()
-raylib.setMouseCursor()
-raylib.getTouchX()
-raylib.getTouchY()
-raylib.getTouchPosition()
-raylib.getTouchPointId()
-raylib.getTouchPointCount()
-raylib.setGesturesEnabled()
-raylib.isGestureDetected()
-raylib.getGestureDetected()
-raylib.getGestureHoldDuration()
-raylib.getGestureDragVector()
-raylib.getGestureDragAngle()
-raylib.getGesturePinchVector()
-raylib.getGesturePinchAngle()
-raylib.updateCamera()
-raylib.updateCameraPro()
-raylib.setShapesTexture()
-raylib.getShapesTexture()
-raylib.getShapesTextureRectangle()
-raylib.drawPixel()
-raylib.drawPixelV()
-raylib.drawLine()
-raylib.drawLineV()
-raylib.drawLineEx()
-raylib.drawLineStrip()
-raylib.drawLineBezier()
-raylib.drawCircle()
-raylib.drawCircleSector()
-raylib.drawCircleSectorLines()
-raylib.drawCircleGradient()
-raylib.drawCircleV()
-raylib.drawCircleLines()
-raylib.drawCircleLinesV()
-raylib.drawEllipse()
-raylib.drawEllipseV()
-raylib.drawEllipseLines()
-raylib.drawEllipseLinesV()
-raylib.drawRing()
-raylib.drawRingLines()
-raylib.drawRectangle()
-raylib.drawRectangleV()
-raylib.drawRectangleRec()
-raylib.drawRectanglePro()
-raylib.drawRectangleGradientV()
-raylib.drawRectangleGradientH()
-raylib.drawRectangleGradientEx()
-raylib.drawRectangleLines()
-raylib.drawRectangleLinesEx()
-raylib.drawRectangleRounded()
-raylib.drawRectangleRoundedLines()
-raylib.drawRectangleRoundedLinesEx()
-raylib.drawTriangle()
-raylib.drawTriangleLines()
-raylib.drawTriangleFan()
-raylib.drawTriangleStrip()
-raylib.drawPoly()
-raylib.drawPolyLines()
-raylib.drawPolyLinesEx()
-raylib.drawSplineLinear()
-raylib.drawSplineBasis()
-raylib.drawSplineCatmullRom()
-raylib.drawSplineBezierQuadratic()
-raylib.drawSplineBezierCubic()
-raylib.drawSplineSegmentLinear()
-raylib.drawSplineSegmentBasis()
-raylib.drawSplineSegmentCatmullRom()
-raylib.drawSplineSegmentBezierQuadratic()
-raylib.drawSplineSegmentBezierCubic()
-raylib.getSplinePointLinear()
-raylib.getSplinePointBasis()
-raylib.getSplinePointCatmullRom()
-raylib.getSplinePointBezierQuad()
-raylib.getSplinePointBezierCubic()
-raylib.checkCollisionRecs()
-raylib.checkCollisionCircles()
-raylib.checkCollisionCircleRec()
-raylib.checkCollisionCircleLine()
-raylib.checkCollisionPointRec()
-raylib.checkCollisionPointCircle()
-raylib.checkCollisionPointTriangle()
-raylib.checkCollisionPointLine()
-raylib.checkCollisionPointPoly()
-raylib.checkCollisionLines()
-raylib.getCollisionRec()
-raylib.loadImage()
-raylib.loadImageRaw()
-raylib.loadImageAnim()
-raylib.loadImageAnimFromMemory()
-raylib.loadImageFromMemory()
-raylib.loadImageFromTexture()
-raylib.loadImageFromScreen()
-raylib.isImageValid()
-raylib.unloadImage()
-raylib.exportImage()
-raylib.exportImageToMemory()
-raylib.exportImageAsCode()
-raylib.genImageColor()
-raylib.genImageGradientLinear()
-raylib.genImageGradientRadial()
-raylib.genImageGradientSquare()
-raylib.genImageChecked()
-raylib.genImageWhiteNoise()
-raylib.genImagePerlinNoise()
-raylib.genImageCellular()
-raylib.genImageText()
-raylib.imageCopy()
-raylib.imageFromImage()
-raylib.imageFromChannel()
-raylib.imageText()
-raylib.imageTextEx()
-raylib.imageFormat()
-raylib.imageToPOT()
-raylib.imageCrop()
-raylib.imageAlphaCrop()
-raylib.imageAlphaClear()
-raylib.imageAlphaMask()
-raylib.imageAlphaPremultiply()
-raylib.imageBlurGaussian()
-raylib.imageKernelConvolution()
-raylib.imageResize()
-raylib.imageResizeNN()
-raylib.imageResizeCanvas()
-raylib.imageMipmaps()
-raylib.imageDither()
-raylib.imageFlipVertical()
-raylib.imageFlipHorizontal()
-raylib.imageRotate()
-raylib.imageRotateCW()
-raylib.imageRotateCCW()
-raylib.imageColorTint()
-raylib.imageColorInvert()
-raylib.imageColorGrayscale()
-raylib.imageColorContrast()
-raylib.imageColorBrightness()
-raylib.imageColorReplace()
-raylib.loadImageColors()
-raylib.loadImagePalette()
-raylib.unloadImageColors()
-raylib.unloadImagePalette()
-raylib.getImageAlphaBorder()
-raylib.getImageColor()
-raylib.imageClearBackground()
-raylib.imageDrawPixel()
-raylib.imageDrawPixelV()
-raylib.imageDrawLine()
-raylib.imageDrawLineV()
-raylib.imageDrawLineEx()
-raylib.imageDrawCircle()
-raylib.imageDrawCircleV()
-raylib.imageDrawCircleLines()
-raylib.imageDrawCircleLinesV()
-raylib.imageDrawRectangle()
-raylib.imageDrawRectangleV()
-raylib.imageDrawRectangleRec()
-raylib.imageDrawRectangleLines()
-raylib.imageDrawTriangle()
-raylib.imageDrawTriangleEx()
-raylib.imageDrawTriangleLines()
-raylib.imageDrawTriangleFan()
-raylib.imageDrawTriangleStrip()
-raylib.imageDraw()
-raylib.imageDrawText()
-raylib.imageDrawTextEx()
-raylib.loadTexture()
-raylib.loadTextureFromImage()
-raylib.loadTextureCubemap()
-raylib.loadRenderTexture()
-raylib.isTextureValid()
-raylib.unloadTexture()
-raylib.isRenderTextureValid()
-raylib.unloadRenderTexture()
-raylib.updateTexture()
-raylib.updateTextureRec()
-raylib.genTextureMipmaps()
-raylib.setTextureFilter()
-raylib.setTextureWrap()
-raylib.drawTexture()
-raylib.drawTextureV()
-raylib.drawTextureEx()
-raylib.drawTextureRec()
-raylib.drawTexturePro()
-raylib.drawTextureNPatch()
-raylib.colorIsEqual()
-raylib.fade()
-raylib.colorToInt()
-raylib.colorNormalize()
-raylib.colorFromNormalized()
-raylib.colorToHSV()
-raylib.colorFromHSV()
-raylib.colorTint()
-raylib.colorBrightness()
-raylib.colorContrast()
-raylib.colorAlpha()
-raylib.colorAlphaBlend()
-raylib.colorLerp()
-raylib.getColor()
-raylib.getPixelColor()
-raylib.setPixelColor()
-raylib.getPixelDataSize()
-raylib.getFontDefault()
-raylib.loadFont()
-raylib.loadFontEx()
-raylib.loadFontFromImage()
-raylib.loadFontFromMemory()
-raylib.isFontValid()
-raylib.loadFontData()
-raylib.genImageFontAtlas()
-raylib.unloadFontData()
-raylib.unloadFont()
-raylib.exportFontAsCode()
-raylib.drawFPS()
-raylib.drawText()
-raylib.drawTextEx()
-raylib.drawTextPro()
-raylib.drawTextCodepoint()
-raylib.drawTextCodepoints()
-raylib.setTextLineSpacing()
-raylib.measureText()
-raylib.measureTextEx()
-raylib.getGlyphIndex()
-raylib.getGlyphInfo()
-raylib.getGlyphAtlasRec()
-raylib.loadUTF8()
-raylib.unloadUTF8()
-raylib.loadCodepoints()
-raylib.unloadCodepoints()
-raylib.getCodepointCount()
-raylib.getCodepoint()
-raylib.getCodepointNext()
-raylib.getCodepointPrevious()
-raylib.codepointToUTF8()
-raylib.textCopy()
-raylib.textIsEqual()
-raylib.textLength()
-raylib.textFormat()
-raylib.textSubtext()
-raylib.textReplace()
-raylib.textInsert()
-raylib.textJoin()
-raylib.textSplit()
-raylib.textAppend()
-raylib.textFindIndex()
-raylib.textToUpper()
-raylib.textToLower()
-raylib.textToPascal()
-raylib.textToSnake()
-raylib.textToCamel()
-raylib.textToInteger()
-raylib.textToFloat()
-raylib.drawLine3D()
-raylib.drawPoint3D()
-raylib.drawCircle3D()
-raylib.drawTriangle3D()
-raylib.drawTriangleStrip3D()
-raylib.drawCube()
-raylib.drawCubeV()
-raylib.drawCubeWires()
-raylib.drawCubeWiresV()
-raylib.drawSphere()
-raylib.drawSphereEx()
-raylib.drawSphereWires()
-raylib.drawCylinder()
-raylib.drawCylinderEx()
-raylib.drawCylinderWires()
-raylib.drawCylinderWiresEx()
-raylib.drawCapsule()
-raylib.drawCapsuleWires()
-raylib.drawPlane()
-raylib.drawRay()
-raylib.drawGrid()
-raylib.loadModel()
-raylib.loadModelFromMesh()
-raylib.isModelValid()
-raylib.unloadModel()
-raylib.getModelBoundingBox()
-raylib.drawModel()
-raylib.drawModelEx()
-raylib.drawModelWires()
-raylib.drawModelWiresEx()
-raylib.drawModelPoints()
-raylib.drawModelPointsEx()
-raylib.drawBoundingBox()
-raylib.drawBillboard()
-raylib.drawBillboardRec()
-raylib.drawBillboardPro()
-raylib.uploadMesh()
-raylib.updateMeshBuffer()
-raylib.unloadMesh()
-raylib.drawMesh()
-raylib.drawMeshInstanced()
-raylib.getMeshBoundingBox()
-raylib.genMeshTangents()
-raylib.exportMesh()
-raylib.exportMeshAsCode()
-raylib.genMeshPoly()
-raylib.genMeshPlane()
-raylib.genMeshCube()
-raylib.genMeshSphere()
-raylib.genMeshHemiSphere()
-raylib.genMeshCylinder()
-raylib.genMeshCone()
-raylib.genMeshTorus()
-raylib.genMeshKnot()
-raylib.genMeshHeightmap()
-raylib.genMeshCubicmap()
-raylib.loadMaterials()
-raylib.loadMaterialDefault()
-raylib.isMaterialValid()
-raylib.unloadMaterial()
-raylib.setMaterialTexture()
-raylib.setModelMeshMaterial()
-raylib.loadModelAnimations()
-raylib.updateModelAnimation()
-raylib.updateModelAnimationBones()
-raylib.unloadModelAnimation()
-raylib.unloadModelAnimations()
-raylib.isModelAnimationValid()
-raylib.checkCollisionSpheres()
-raylib.checkCollisionBoxes()
-raylib.checkCollisionBoxSphere()
-raylib.getRayCollisionSphere()
-raylib.getRayCollisionBox()
-raylib.getRayCollisionMesh()
-raylib.getRayCollisionTriangle()
-raylib.getRayCollisionQuad()
-raylib.initAudioDevice()
-raylib.closeAudioDevice()
-raylib.isAudioDeviceReady()
-raylib.setMasterVolume()
-raylib.getMasterVolume()
-raylib.loadWave()
-raylib.loadWaveFromMemory()
-raylib.isWaveValid()
-raylib.loadSound()
-raylib.loadSoundFromWave()
-raylib.loadSoundAlias()
-raylib.isSoundValid()
-raylib.updateSound()
-raylib.unloadWave()
-raylib.unloadSound()
-raylib.unloadSoundAlias()
-raylib.exportWave()
-raylib.exportWaveAsCode()
-raylib.playSound()
-raylib.stopSound()
-raylib.pauseSound()
-raylib.resumeSound()
-raylib.isSoundPlaying()
-raylib.setSoundVolume()
-raylib.setSoundPitch()
-raylib.setSoundPan()
-raylib.waveCopy()
-raylib.waveCrop()
-raylib.waveFormat()
-raylib.loadWaveSamples()
-raylib.unloadWaveSamples()
-raylib.loadMusicStream()
-raylib.loadMusicStreamFromMemory()
-raylib.isMusicValid()
-raylib.unloadMusicStream()
-raylib.playMusicStream()
-raylib.isMusicStreamPlaying()
-raylib.updateMusicStream()
-raylib.stopMusicStream()
-raylib.pauseMusicStream()
-raylib.resumeMusicStream()
-raylib.seekMusicStream()
-raylib.setMusicVolume()
-raylib.setMusicPitch()
-raylib.setMusicPan()
-raylib.getMusicTimeLength()
-raylib.getMusicTimePlayed()
-raylib.loadAudioStream()
-raylib.isAudioStreamValid()
-raylib.unloadAudioStream()
-raylib.updateAudioStream()
-raylib.isAudioStreamProcessed()
-raylib.playAudioStream()
-raylib.pauseAudioStream()
-raylib.resumeAudioStream()
-raylib.isAudioStreamPlaying()
-raylib.stopAudioStream()
-raylib.setAudioStreamVolume()
-raylib.setAudioStreamPitch()
-raylib.setAudioStreamPan()
-raylib.setAudioStreamBufferSizeDefault()
-raylib.setAudioStreamCallback()
-raylib.attachAudioStreamProcessor()
-raylib.detachAudioStreamProcessor()
-raylib.attachAudioMixedProcessor()
-raylib.detachAudioMixedProcessor()
+main()

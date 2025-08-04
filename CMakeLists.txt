@@ -11,11 +11,10 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   get_filename_component(CLANG_P2996_PATH ${CLANG_P2996_PATH} PATH)
   message(==> ${CLANG_P2996_PATH})
   include_directories(${CLANG_P2996_PATH}/include/c++/v1)
-  add_compile_options(
-    -fPIC -ftime-trace -fexpansion-statements -freflection-latest
-    -stdlib++-isystem ${CLANG_P2996_PATH}/include/c++/v1)
+  add_compile_options(-ftime-trace -fexpansion-statements -freflection-latest
+                      -stdlib++-isystem ${CLANG_P2996_PATH}/include/c++/v1)
   add_link_options(
-    -fPIC -fuse-ld=lld -L${CLANG_P2996_PATH}/lib -lc++
+    -fuse-ld=lld -L${CLANG_P2996_PATH}/lib -lc++
     -lc++abi # "-Wl,-Map=${CMAKE_SOURCE_DIR}/${CMAKE_PROJECT_NAME}.map"
   )
 endif()
